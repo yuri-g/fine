@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author yuri
  */
-@WebServlet(name = "CreateUser", urlPatterns = {"/users/new"})
+@WebServlet(name = "CreateUser", urlPatterns = {"/sign_in"})
 public class CreateUser extends HttpServlet {
 
     /**
@@ -63,7 +63,10 @@ public class CreateUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String password = request.getParameter("password");
+        request.setAttribute("password", password);
+        RequestDispatcher view = getServletContext().getRequestDispatcher("/user/signin.jsp");
+        view.forward(request, response);
     }
 
     /**
