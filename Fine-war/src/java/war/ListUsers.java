@@ -5,7 +5,7 @@
 package war;
 
 import ejb.NewsEntityFacade;
-import ejb.SessionManagerBean;
+import ejb.UsersEntityFacade;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -20,17 +20,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author yuri
  */
-@WebServlet(name = "ListNews", urlPatterns = {"/ListNews", ""})
-public class ListNews extends HttpServlet {
-    
-    private List news;
-    
-    @EJB
-    private SessionManagerBean sessionManagerBean;
-    
-    @EJB
-    private NewsEntityFacade newsEntityFacade;
+@WebServlet(name = "ListUsers", urlPatterns = {"/ListUsers"})
+public class ListUsers extends HttpServlet {
 
+    private List users;
+    
+    @EJB
+    private UsersEntityFacade usersEntityFacade;
+    
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -41,37 +38,14 @@ public class ListNews extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        request.getSession(true);
-        news = newsEntityFacade.findAll();
-        
-        request.setAttribute("news",  news);
-        RequestDispatcher view = getServletContext().getRequestDispatcher("/index.jsp");
+        users = usersEntityFacade.findAll();
+        log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
+        log(users.toString());
+        request.setAttribute("users", users);
+        RequestDispatcher view = getServletContext().getRequestDispatcher("/user/users.jsp");
         view.forward(request, response);
-        
-//        try {
-//            /* TODO output your page here. You may use following sample code. */
-//            out.println("<!DOCTYPE html>");
-//            out.println("<html>");
-//            out.println("<head>");
-//            out.println("<title>Servlet ListNews</title>");            
-//            out.println("</head>");
-//            out.println("<body>");
-//            for (Iterator it = news.iterator(); it.hasNext();) {
-//                NewsEntity elem = (NewsEntity) it.next();
-//                out.println(" <b>" + elem.getTitle() + "</b><br />");
-//                out.println(elem.getBody() + "<br />");
-//            }
-//            out.println("<a href='PostMessage'>Add new message</a>");
-//            out.println("<br><br>");
-//            out.println(sessionManagerBean.getActiveSessionsCount() + " user(s) reading the news.");
-//            out.println("</body>");
-//            out.println("</html>");
-//        } finally {            
-//            out.close();
-//        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

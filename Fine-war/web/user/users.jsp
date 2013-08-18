@@ -1,6 +1,6 @@
 <%-- 
-    Document   : index
-    Created on : Aug 9, 2013, 10:45:59 PM
+    Document   : users
+    Created on : Aug 18, 2013, 11:42:49 PM
     Author     : yuri
 --%>
 
@@ -10,15 +10,16 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Testan</title>
+        <title>JSP Page</title>
     </head>
     <body>
-        <c:forEach items="${requestScope.news}" var="item">
+        <c:forEach items="${requestScope.users}" var="item">
             <div>
-                ${item.getTitle()} <br />
-                ${item.getBody()}
+                ${item.getName()} <br />
+                ${item.getEmail()} <br />
+                ${item.getPassword()} <br />
             </div>    
         </c:forEach>
+         
     </body>
-    
 </html>

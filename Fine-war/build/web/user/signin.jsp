@@ -13,24 +13,33 @@
         <link href="../bootstrap.css" rel="stylesheet"  />
     </head>
     <body>
-            11
-         ${requestScope.password}
+        <c:if test="${not empty requestScope.errors}">
+            <div class="row">
+                <div class="col-lg-2">
+                    ${requestScope.errors}    
+                </div>
+            </div>
+        </c:if>
+
         <div class="row">
             <div class="col-lg-2">
                 <form action="/sign_in" method="post">
-                    <fieldset>
-                       
+                    <fieldset> 
                         <div class="form-group">
                             <label for="username">Name:</label>
                             <input type="text" class="form-control" id="username" name="username">
                         </div>
                         <div class="form-group">
-                            <label for="mail">Mail:</label>
-                            <input type="text" class="form-control" id="mail" name="mail">
+                            <label for="email">Mail:</label>
+                            <input type="text" class="form-control" id="email" name="email">
                         </div>
                         <div class="form-group">
                             <label for="password">Password:</label>
                             <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="passwordC">Password confirmation:</label>
+                            <input type="password" class="form-control" id="passwordC" name="passwordC">
                         </div>
                         <button type="submit" class="btn btn-default">Sign in</button>
                     </fieldset>

@@ -19,7 +19,6 @@
                 ${item.getBody()}
             </div>    
         </c:forEach>
-        w${requestScope.no}
     </body>
     
 </html>

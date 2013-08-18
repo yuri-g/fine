@@ -5,13 +5,23 @@
 package war;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.annotation.Resource;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.Session;
+import ejb.UsersEntity;
 
 /**
  *
@@ -19,6 +29,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 @WebServlet(name = "CreateUser", urlPatterns = {"/sign_in"})
 public class CreateUser extends HttpServlet {
+
+    @Resource(mappedName="jms/NewMessageFactory")
+    private  ConnectionFactory connectionFactory;
+
+    @Resource(mappedName="jms/NewUser")
+    private  Queue queue;
 
     /**
      * Processes requests for both HTTP
@@ -63,10 +79,39 @@ public class CreateUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String password = request.getParameter("password");
-        request.setAttribute("password", password);
-        RequestDispatcher view = getServletContext().getRequestDispatcher("/user/signin.jsp");
-        view.forward(request, response);
+        log("111111111111111111111111111111111111111111111111111111111111111111111111111");
+        log(request.getParameter("email"));
+        String errors = validate(request);
+        if (!errors.isEmpty()) {
+            request.setAttribute("errors", errors);
+            RequestDispatcher view = getServletContext().getRequestDispatcher("/user/signin.jsp");
+            view.forward(request, response);
+        }
+        else {
+             try {
+                Connection connection = connectionFactory.createConnection();
+                Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+                MessageProducer messageProducer = session.createProducer(queue);
+                ObjectMessage message = session.createObjectMessage();
+                
+                UsersEntity e = new UsersEntity();
+                e.setName(request.getParameter("username"));
+                e.setEmail(request.getParameter("email"));
+                e.setPassword(request.getParameter("password"));
+
+                message.setObject(e);                
+                messageProducer.send(message);
+                messageProducer.close();
+                connection.close();
+                response.sendRedirect("ListUsers");
+                return;
+
+            }      
+            catch (JMSException ex) {
+                ex.printStackTrace();
+            }
+        }
+
     }
 
     /**
@@ -77,5 +122,33 @@ public class CreateUser extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
+
+
+
+    private String validate(HttpServletRequest request) {
+        String errors = "";
+        String password = request.getParameter("password");
+        Pattern pattern;
+        Matcher matcher;
+        String EMAIL_PATTERN = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+        + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+        pattern = Pattern.compile(EMAIL_PATTERN);
+        
+        matcher = pattern.matcher(request.getParameter("email"));
+        if (!matcher.matches()) {
+            errors += "Email format is wrong. </ br>";    
+        }
+        if (password.isEmpty()) {
+            errors += "Password can't be empty. </ br>";      
+        }
+        if (!password.equals(request.getParameter("passwordC"))) {
+            errors += "Passwords don't match. </ br>";
+        }
+        return errors;
+
+    }
+
+
+
 }
