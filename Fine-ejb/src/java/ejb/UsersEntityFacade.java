@@ -4,6 +4,7 @@
  */
 package ejb;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -21,9 +22,19 @@ public class UsersEntityFacade extends AbstractFacade<UsersEntity> {
     protected EntityManager getEntityManager() {
         return em;
     }
+    
+
 
     public UsersEntityFacade() {
         super(UsersEntity.class);
     }
+   
     
+    public UsersEntity findByEmail(String email) {
+        return (UsersEntity)em.createQuery(
+            "SELECT c FROM UsersEntity c WHERE c.email = :userEmail")
+                .setParameter("userEmail", email)
+                .getSingleResult();
+
+    }
 }

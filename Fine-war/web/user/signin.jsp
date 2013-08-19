@@ -10,9 +10,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Sign In</title>
+        <link href="../style.css" rel="stylesheet"  />
         <link href="../bootstrap.css" rel="stylesheet"  />
     </head>
-    <body>
+    <body id="content">
         <c:if test="${not empty requestScope.errors}">
             <div class="row">
                 <div class="col-lg-2">

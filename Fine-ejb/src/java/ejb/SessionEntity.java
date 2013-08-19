@@ -9,50 +9,45 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 /**
  *
  * @author yuri
  */
 @Entity
-public class UsersEntity implements Serializable {
+public class SessionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    private String name;
-    private String email;
-    private String password;
-
     
+    private String hash;
+    
+    @JoinColumn(name = "userId")
+    @OneToOne
+    private UsersEntity user;
+
+    public UsersEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UsersEntity user) {
+        this.user = user;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
     public Long getId() {
         return id;
-    } 
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -68,10 +63,10 @@ public class UsersEntity implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof UsersEntity)) {
+        if (!(object instanceof SessionEntity)) {
             return false;
         }
-        UsersEntity other = (UsersEntity) object;
+        SessionEntity other = (SessionEntity) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -80,8 +75,7 @@ public class UsersEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "ejb.UsersEntity[ id=" + id + " ]";
+        return "ejb.SessionEntity[ id=" + id + " ]";
     }
-    
     
 }

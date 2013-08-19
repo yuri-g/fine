@@ -1,19 +1,35 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
-<head>
-    <title>Login Page</title>
+    <head>
+        <title>Login Page</title>
+        <link href="../style.css" rel="stylesheet"  />
+        <link href="../bootstrap.css" rel="stylesheet"  />
+    </head>
 
-</head>
 
-<h2>Hello, please log in:</h2>
-<br><br>
-<form action="j_security_check" method=post>
-    <p><strong>Username: </strong>
-    <input type="text" name="j_username" size="25">
-    <p><p><strong>Password: </strong>
-    <input type="password" size="15" name="j_password">
-    <p><p>
-    <input type="submit" value="Submit">
-    <input type="reset" value="Reset">
-</form>
+    <body id="content">
+        <c:if test="${not empty requestScope.errors}">
+            <div class="row">
+                <div class="col-lg-2">
+                    ${requestScope.errors}    
+                </div>
+            </div>
+        </c:if>
+         <div class="row">
+            <div class="col-lg-2">
+                <form action="/log_in" method="post">
+                    <fieldset> 
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="text" class="form-control" id="email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                        </div>
+                        <button type="submit" class="btn btn-default">Log in</button>
+                    </fieldset>
+                </form>
+            </div>
+    </body>
 </html>

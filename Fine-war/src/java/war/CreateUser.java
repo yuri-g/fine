@@ -22,6 +22,9 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
 import ejb.UsersEntity;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import util.Password;
 
 /**
  *
@@ -79,8 +82,6 @@ public class CreateUser extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        log("111111111111111111111111111111111111111111111111111111111111111111111111111");
-        log(request.getParameter("email"));
         String errors = validate(request);
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
@@ -97,8 +98,8 @@ public class CreateUser extends HttpServlet {
                 UsersEntity e = new UsersEntity();
                 e.setName(request.getParameter("username"));
                 e.setEmail(request.getParameter("email"));
-                e.setPassword(request.getParameter("password"));
-
+                String ePassword = encodePassword(request.getParameter("password"));
+                e.setPassword(ePassword);
                 message.setObject(e);                
                 messageProducer.send(message);
                 messageProducer.close();
@@ -109,6 +110,8 @@ public class CreateUser extends HttpServlet {
             }      
             catch (JMSException ex) {
                 ex.printStackTrace();
+            } catch (Exception ex) {
+                Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -147,6 +150,10 @@ public class CreateUser extends HttpServlet {
         }
         return errors;
 
+    }
+
+    private String encodePassword(String password) throws Exception {
+        return Password.getSaltedHash(password);
     }
 
 
