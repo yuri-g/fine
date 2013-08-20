@@ -4,9 +4,9 @@
  */
 package ejb;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -31,10 +31,16 @@ public class UsersEntityFacade extends AbstractFacade<UsersEntity> {
    
     
     public UsersEntity findByEmail(String email) {
-        return (UsersEntity)em.createQuery(
+        try {
+          return (UsersEntity)em.createQuery(
             "SELECT c FROM UsersEntity c WHERE c.email = :userEmail")
                 .setParameter("userEmail", email)
                 .getSingleResult();
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+       
 
     }
 }

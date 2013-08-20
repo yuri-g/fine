@@ -8,7 +8,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ejb.EJB;
-import ejb.UsersEntity;
+import javax.persistence.NoResultException;
 
 /**
  *
@@ -33,11 +33,36 @@ public class SessionEntityFacade extends AbstractFacade<SessionEntity> {
     
     
     public SessionEntity findByUserEmail(String email) {
-        UsersEntity user = usersEntityFacade.findByEmail(email);
-        return (SessionEntity)em.createQuery(
-            "SELECT c FROM sessionentity c WHERE c.userId = :userId")
-                .setParameter("userId", user.getId())
+        try {
+            UsersEntity user = usersEntityFacade.findByEmail(email);
+            if (user != null) {
+                return (SessionEntity)em.createQuery(
+                "SELECT c FROM SessionEntity c WHERE c.userId = :userId")
+                .setParameter("userId", user)
                 .getSingleResult();
+            }
+            else {
+                return null;
+            }
+             
+        }
+        catch (NoResultException e) {
+            return null;
+        }
+        
+
+    }
+    
+    public SessionEntity findByHash(String hash) {
+        try {
+            return (SessionEntity)em.createQuery(
+                "SELECT c FROM SessionEntity c WHERE c.sessionHash = :sessionHash")
+                .setParameter("sessionHash", hash)
+                .getSingleResult();
+        }
+        catch (NoResultException e) {
+            return null;
+        }
     }
     
 }

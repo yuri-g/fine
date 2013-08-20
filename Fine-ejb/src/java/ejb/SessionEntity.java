@@ -23,26 +23,26 @@ public class SessionEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
-    private String hash;
+    private String sessionHash;
     
     @JoinColumn(name = "userId")
     @OneToOne
-    private UsersEntity user;
+    private UsersEntity userId;
 
     public UsersEntity getUser() {
-        return user;
+        return userId;
     }
 
     public void setUser(UsersEntity user) {
-        this.user = user;
+        this.userId = user;
     }
 
     public String getHash() {
-        return hash;
+        return sessionHash;
     }
 
     public void setHash(String hash) {
-        this.hash = hash;
+        this.sessionHash = hash;
     }
 
     public Long getId() {

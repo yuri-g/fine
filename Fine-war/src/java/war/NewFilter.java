@@ -4,10 +4,12 @@
  */
 package war;
 
+import ejb.SessionEntityFacade;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import javax.ejb.EJB;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -16,7 +18,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *
@@ -30,6 +31,10 @@ public class NewFilter implements Filter {
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
+    
+    
+     @EJB
+    private SessionEntityFacade sessionEntityFacade;
     
     public NewFilter() {
     }    
@@ -107,10 +112,14 @@ public class NewFilter implements Filter {
             log("NewFilter:doFilter()");
         }
         
-        doBeforeProcessing(request, response);
         HttpServletRequest req = (HttpServletRequest) request;
-        HttpServletResponse res = (HttpServletResponse) response; 
-        req.setAttribute("no", "YES");
+        if (sessionEntityFacade.findByHash(req.getSession().getId()) == null) {
+            req.setAttribute("logged", false);
+        }
+        else {
+            req.setAttribute("logged", true);
+        }
+  
         
         Throwable problem = null;
         try {
@@ -123,7 +132,7 @@ public class NewFilter implements Filter {
             t.printStackTrace();
         }
         
-        doAfterProcessing(request, response);
+        doAfterProcessing(req, response);
 
         // If there was a problem, we want to rethrow it if it is
         // a known type, otherwise log it.
