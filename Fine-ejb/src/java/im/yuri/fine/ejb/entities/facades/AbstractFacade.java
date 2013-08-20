@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ejb;
+package im.yuri.fine.ejb.entities.facades;
 
 import java.util.List;
 import javax.persistence.EntityManager;

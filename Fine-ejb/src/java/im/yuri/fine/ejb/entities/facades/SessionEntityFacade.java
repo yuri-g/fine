@@ -2,18 +2,17 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ejb;
+package im.yuri.fine.ejb.entities.facades;
 
+import im.yuri.fine.ejb.entities.SessionEntity;
+import im.yuri.fine.ejb.entities.UsersEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ejb.EJB;
 import javax.persistence.NoResultException;
 
-/**
- *
- * @author yuri
- */
+
 @Stateless
 public class SessionEntityFacade extends AbstractFacade<SessionEntity> {
     @PersistenceContext(unitName = "Fine-ejbPU")

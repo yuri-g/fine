@@ -12,7 +12,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
-    ${requestScope.logged}
+    <c:if test="${not empty requestScope.name}">
+        Logged in as: ${requestScope.name}
+    </c:if>
     <body>
         <c:forEach items="${requestScope.users}" var="item">
             <div>

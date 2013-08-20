@@ -2,10 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package war;
+package im.yuri.fine.war.actions;
 
-import ejb.NewsEntityFacade;
-import ejb.UsersEntityFacade;
+import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;

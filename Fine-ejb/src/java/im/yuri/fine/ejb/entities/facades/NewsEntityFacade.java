@@ -2,16 +2,14 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ejb;
+package im.yuri.fine.ejb.entities.facades;
 
+import im.yuri.fine.ejb.entities.NewsEntity;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-/**
- *
- * @author yuri
- */
+
 @Stateless
 public class NewsEntityFacade extends AbstractFacade<NewsEntity> {
     @PersistenceContext(unitName = "Fine-ejbPU")

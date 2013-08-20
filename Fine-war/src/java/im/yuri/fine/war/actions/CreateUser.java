@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package war;
+package im.yuri.fine.war.actions;
 
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
@@ -21,10 +21,12 @@ import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
-import ejb.UsersEntity;
+import im.yuri.fine.ejb.entities.UsersEntity;
+import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import util.Password;
+import im.yuri.fine.war.util.Password;
+import javax.ejb.EJB;
 
 /**
  *
@@ -32,13 +34,19 @@ import util.Password;
  */
 @WebServlet(name = "CreateUser", urlPatterns = {"/sign_in"})
 public class CreateUser extends HttpServlet {
+    
+    @EJB
+    private UsersEntityFacade usersEntityFacade;
 
-    @Resource(mappedName="jms/NewMessageFactory")
-    private  ConnectionFactory connectionFactory;
+//    @Resource(mappedName="jms/NewMessageFactory")
+//    private  ConnectionFactory connectionFactory;
+//
+//    @Resource(mappedName="jms/NewUser")
+//    private  Queue queue;
 
-    @Resource(mappedName="jms/NewUser")
-    private  Queue queue;
-
+    
+    
+    
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -90,28 +98,17 @@ public class CreateUser extends HttpServlet {
         }
         else {
              try {
-                Connection connection = connectionFactory.createConnection();
-                Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-                MessageProducer messageProducer = session.createProducer(queue);
-                ObjectMessage message = session.createObjectMessage();
-                
                 UsersEntity e = new UsersEntity();
                 e.setName(request.getParameter("username"));
                 e.setEmail(request.getParameter("email"));
                 String ePassword = encodePassword(request.getParameter("password"));
                 e.setPassword(ePassword);
-                message.setObject(e);                
-                messageProducer.send(message);
-                messageProducer.close();
-                connection.close();
+                usersEntityFacade.create(e);
                 response.sendRedirect("ListUsers");
-                return;
 
             }      
-            catch (JMSException ex) {
-                ex.printStackTrace();
-            } catch (Exception ex) {
-                Logger.getLogger(CreateUser.class.getName()).log(Level.SEVERE, null, ex);
+            catch (Exception ex) {
+                response.sendError(500);
             }
         }
 

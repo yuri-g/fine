@@ -2,9 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package war;
+package im.yuri.fine.war.actions;
 
-import ejb.SessionEntityFacade;
+import im.yuri.fine.ejb.entities.SessionEntity;
+import im.yuri.fine.ejb.entities.facades.SessionEntityFacade;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -113,10 +114,13 @@ public class NewFilter implements Filter {
         }
         
         HttpServletRequest req = (HttpServletRequest) request;
-        if (sessionEntityFacade.findByHash(req.getSession().getId()) == null) {
+        SessionEntity e = sessionEntityFacade.findByHash(req.getSession().getId());
+        if (e == null) {
+            
             req.setAttribute("logged", false);
         }
         else {
+            req.setAttribute("name", e.getUser().getName());
             req.setAttribute("logged", true);
         }
   

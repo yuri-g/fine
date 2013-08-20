@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package ejb;
+package im.yuri.fine.ejb.entities;
 
 import java.io.Serializable;
 import javax.persistence.Entity;
@@ -12,10 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
-/**
- *
- * @author yuri
- */
+
 @Entity
 public class SessionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
