@@ -13,18 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.annotation.Resource;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.Session;
 import im.yuri.fine.ejb.entities.UsersEntity;
 import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import im.yuri.fine.war.util.Password;
 import javax.ejb.EJB;
 
@@ -37,15 +27,6 @@ public class CreateUser extends HttpServlet {
     
     @EJB
     private UsersEntityFacade usersEntityFacade;
-
-//    @Resource(mappedName="jms/NewMessageFactory")
-//    private  ConnectionFactory connectionFactory;
-//
-//    @Resource(mappedName="jms/NewUser")
-//    private  Queue queue;
-
-    
-    
     
     /**
      * Processes requests for both HTTP

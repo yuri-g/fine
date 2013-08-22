@@ -4,13 +4,23 @@
  */
 package im.yuri.fine.war.actions;
 
+//import im.yuri.fine.ejb.UserSessionBean;
+import im.yuri.fine.ejb.UserSessionBeanRemote;
+import im.yuri.fine.ejb.entities.PersistedSessionEntity;
 import im.yuri.fine.ejb.entities.SessionEntity;
+import im.yuri.fine.ejb.entities.facades.PersistedSessionEntityFacade;
 import im.yuri.fine.ejb.entities.facades.SessionEntityFacade;
+import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -18,6 +28,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -26,7 +37,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 @WebFilter(filterName = "NewFilter", urlPatterns = {"/*"})
 public class NewFilter implements Filter {
-    
+    @EJB
+    PersistedSessionEntityFacade persistedSessionEntityFacade;
+//    UserSessionBean userSessionBean = lookupUserSessionBeanBean();
+     
     private static final boolean debug = true;
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
@@ -34,8 +48,17 @@ public class NewFilter implements Filter {
     private FilterConfig filterConfig = null;
     
     
-     @EJB
+    @EJB
     private SessionEntityFacade sessionEntityFacade;
+    
+    @EJB
+    private UsersEntityFacade usersEntityFacade;
+    
+    
+    
+    
+    
+   
     
     public NewFilter() {
     }    
@@ -114,16 +137,47 @@ public class NewFilter implements Filter {
         }
         
         HttpServletRequest req = (HttpServletRequest) request;
+        
         SessionEntity e = sessionEntityFacade.findByHash(req.getSession().getId());
         if (e == null) {
-            
+            Cookie[] cookies = req.getCookies();
+            Cookie persistedCookie = null;
+            for (int i = 0; i < cookies.length; i++) {
+                if (cookies[i].getName().equals("pLogin")) {
+                    persistedCookie = cookies[i];
+                }
+            }
+            if (persistedCookie != null) {
+               String[] splittedCookie = persistedCookie.getValue().split("\\$");
+               log(persistedCookie.getValue().split("$")[0]);
+               String userEmail = splittedCookie[1];
+               String hash = splittedCookie[0];
+               PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
+               if(persistedSession != null) {
+                   req.setAttribute("name", usersEntityFacade.findByEmail(userEmail).getName() + "lol");
+               }
+            }
             req.setAttribute("logged", false);
         }
         else {
-            req.setAttribute("name", e.getUser().getName());
-            req.setAttribute("logged", true);
+             InitialContext context;
+             UserSessionBeanRemote userSessionBean;
+             try {
+                 context = new InitialContext();
+                 userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
+             } catch (NamingException ex) {
+                 Logger.getLogger(ListUsers.class.getName()).log(Level.SEVERE, null, ex);
+             }
+
+             userSessionBean = (UserSessionBeanRemote)req.getSession().getAttribute("myStatefulBean");
+            log("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[");
+            log(Integer.toString(userSessionBean.getTest()));   
+//            req.setAttribute("name", e.getUser().getName());
+
         }
   
+
+        
         
         Throwable problem = null;
         try {
@@ -245,5 +299,25 @@ public class NewFilter implements Filter {
     
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);        
+    }
+//
+//    private UserSessionBean lookupUserSessionBeanBean() {
+//        try {
+//            Context c = new InitialContext();
+//            return (UserSessionBean) c.lookup("java:global/Fine/Fine-ejb/UserSessionBean!im.yuri.fine.ejb.UserSessionBean");
+//        } catch (NamingException ne) {
+//            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+//            throw new RuntimeException(ne);
+//        }
+//    }
+
+    private PersistedSessionEntityFacade lookupPersistedSessionEntityFacadeBean() {
+        try {
+            Context c = new InitialContext();
+            return (PersistedSessionEntityFacade) c.lookup("java:global/Fine/Fine-ejb/PersistedSessionEntityFacade!im.yuri.fine.ejb.entities.facades.PersistedSessionEntityFacade");
+        } catch (NamingException ne) {
+            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
+            throw new RuntimeException(ne);
+        }
     }
 }

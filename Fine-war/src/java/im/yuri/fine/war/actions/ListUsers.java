@@ -4,10 +4,15 @@
  */
 package im.yuri.fine.war.actions;
 
+import im.yuri.fine.ejb.UserSessionBeanRemote;
 import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -40,12 +45,11 @@ public class ListUsers extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         users = usersEntityFacade.findAll();
-        log("xxxxxxxxxxxxxxxxxxxxxxxxxx");
-        log(users.toString());
         request.setAttribute("users", users);
+
         RequestDispatcher view = getServletContext().getRequestDispatcher("/user/users.jsp");
         view.forward(request, response);
-    }
+    } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

@@ -27,6 +27,13 @@
                             <label for="password">Password:</label>
                             <input type="password" class="form-control" id="password" name="password">
                         </div>
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="remember" name="remember"> Remember me
+                                </label>
+                            </div>
+                        </div>
                         <button type="submit" class="btn btn-default">Log in</button>
                     </fieldset>
                 </form>

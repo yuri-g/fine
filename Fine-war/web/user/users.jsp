@@ -15,6 +15,7 @@
     <c:if test="${not empty requestScope.name}">
         Logged in as: ${requestScope.name}
     </c:if>
+    ${requestScope.myStatefulBean.getTest()}
     <body>
         <c:forEach items="${requestScope.users}" var="item">
             <div>

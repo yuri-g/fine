@@ -3,7 +3,6 @@
  * and open the template in the editor.
  */
 package im.yuri.fine.war.util;
-
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
