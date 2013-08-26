@@ -12,8 +12,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
     </head>
-    <c:if test="${not empty requestScope.name}">
-        Logged in as: ${requestScope.name}
+    <c:if test="${not empty requestScope.uSessionBean}">
+        Logged in as: ${requestScope.uSessionBean.getUser().getName()}
     </c:if>
     ${requestScope.myStatefulBean.getTest()}
     <body>
@@ -24,6 +24,8 @@
                 ${item.getPassword()} <br />
             </div>    
         </c:forEach>
-         
+        <a href="/logout">
+            logout
+        </a>
     </body>
 </html>

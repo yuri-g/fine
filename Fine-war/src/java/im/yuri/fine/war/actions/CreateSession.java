@@ -77,6 +77,9 @@ public class CreateSession extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (request.getAttribute("uSessionBean") != null) {
+            response.sendRedirect("/");
+        }
         RequestDispatcher view = getServletContext().getRequestDispatcher("/user/login.jsp");
         view.forward(request, response);
     }
@@ -109,11 +112,9 @@ public class CreateSession extends HttpServlet {
                     UserSessionBeanRemote userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
                     Random randomGenerator = new Random();
                     int randomInt = randomGenerator.nextInt(100);
-                    userSessionBean.setTest(randomInt);
                     HttpSession clientSession = request.getSession(false);
                     clientSession.setAttribute("myStatefulBean", userSessionBean);
                     log("XXXXXXXXXX2222222222222222222222222222222222222222");
-                    log(request.getParameter("remember").toString());
                     if(request.getParameter("remember") != null) {
                         String persistedSession = Base64.encodeBase64String(SecureRandom.getInstance("SHA1PRNG").generateSeed(128));
                         PersistedSessionEntity pSession = new PersistedSessionEntity();

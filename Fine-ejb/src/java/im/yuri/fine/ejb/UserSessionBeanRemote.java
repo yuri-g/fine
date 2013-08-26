@@ -16,8 +16,9 @@ import javax.ejb.Remote;
 public interface UserSessionBeanRemote {
     public void initialize(UsersEntity e);
     public UsersEntity getUser();
-    public String getSessionHash();
     public void remove();
-    public void setTest(int test);
-    public int getTest();
+    public void setUser(UsersEntity user);
+    public void setSessionHash(String hash);
+    public String getSessionHash();
+
 }

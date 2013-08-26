@@ -4,14 +4,15 @@
  */
 package im.yuri.fine.war.actions;
 
-import im.yuri.fine.ejb.UserSessionBeanRemote;
-import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
+import im.yuri.fine.ejb.entities.PersistedSessionEntity;
+import im.yuri.fine.ejb.entities.SessionEntity;
+import im.yuri.fine.ejb.entities.facades.PersistedSessionEntityFacade;
+import im.yuri.fine.ejb.entities.facades.SessionEntityFacade;
 import java.io.IOException;
-import java.util.List;
 import javax.ejb.EJB;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,13 +21,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author yuri
  */
-@WebServlet(name = "ListUsers", urlPatterns = {"/ListUsers"})
-public class ListUsers extends HttpServlet {
+@WebServlet(name = "DestroySession", urlPatterns = {"/logout"})
+public class DestroySession extends HttpServlet {
 
-    private List users;
+    @EJB
+    private SessionEntityFacade sessionEntityFacade;
     
     @EJB
-    private UsersEntityFacade usersEntityFacade;
+    private PersistedSessionEntityFacade persistedSessionEntityFacade;
     
     /**
      * Processes requests for both HTTP
@@ -40,14 +42,9 @@ public class ListUsers extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        users = usersEntityFacade.findAll();
-        request.setAttribute("users", users);
-        UserSessionBeanRemote userSessionBean = (UserSessionBeanRemote)request.getSession().getAttribute("uSessionBean");
-        RequestDispatcher view = getServletContext().getRequestDispatcher("/user/users.jsp");
-        view.forward(request, response);
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    }
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
@@ -60,7 +57,42 @@ public class ListUsers extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        if (request.getAttribute("uSessionBean") != null) {
+            SessionEntity e = sessionEntityFacade.findByHash(request.getSession().getId());
+            if (e != null) {
+                sessionEntityFacade.remove(e);
+            }
+            Cookie[] cookies = request.getCookies();
+            Cookie persistedCookie = null;
+            if(cookies != null) {
+                 for (int i = 0; i < cookies.length; i++) {
+                if (cookies[i].getName().equals("pLogin")) {
+                    persistedCookie = cookies[i];
+                }
+            }
+            if(persistedCookie != null) {
+                String[] splittedCookie = persistedCookie.getValue().split("\\$");
+                String userEmail = splittedCookie[1];
+                String hash = splittedCookie[0];
+                PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
+                if (persistedSession != null) {
+                    persistedSessionEntityFacade.remove(persistedSession);
+                }
+                log("TEEEEEEEEEEEEEST");
+                persistedCookie.setMaxAge(0);
+                response.addCookie(persistedCookie);
+                
+            }
+               
+            }
+            response.sendRedirect("/ListUsers");
+            
+        }
+        else {
+            response.sendRedirect("/log_in");
+        }
         processRequest(request, response);
+
     }
 
     /**
@@ -86,5 +118,5 @@ public class ListUsers extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 }

@@ -132,53 +132,39 @@ public class NewFilter implements Filter {
             FilterChain chain)
             throws IOException, ServletException {
         
+        
+        InitialContext context;
+        UserSessionBeanRemote userSessionBean;
+        try {
+            context = new InitialContext();
+            userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
+        } catch (NamingException ex) {
+            
+        }
+        
+        
         if (debug) {
             log("NewFilter:doFilter()");
         }
         
         HttpServletRequest req = (HttpServletRequest) request;
-        
-        SessionEntity e = sessionEntityFacade.findByHash(req.getSession().getId());
-        if (e == null) {
-            Cookie[] cookies = req.getCookies();
-            Cookie persistedCookie = null;
-            for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals("pLogin")) {
-                    persistedCookie = cookies[i];
-                }
+        userSessionBean = (UserSessionBeanRemote)req.getSession().getAttribute("uSessionBean");
+        if (userSessionBean == null) {
+           try {
+                 
+               userSessionBean = checkLogin(req,  userSessionBean);
+           }
+           catch (NamingException ex) {
+               Logger.getLogger(ListUsers.class.getName()).log(Level.SEVERE, null, ex);
+           }
+            
+            if (userSessionBean != null) {
+                req.setAttribute("uSessionBean", userSessionBean);
             }
-            if (persistedCookie != null) {
-               String[] splittedCookie = persistedCookie.getValue().split("\\$");
-               log(persistedCookie.getValue().split("$")[0]);
-               String userEmail = splittedCookie[1];
-               String hash = splittedCookie[0];
-               PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
-               if(persistedSession != null) {
-                   req.setAttribute("name", usersEntityFacade.findByEmail(userEmail).getName() + "lol");
-               }
-            }
-            req.setAttribute("logged", false);
+           
         }
-        else {
-             InitialContext context;
-             UserSessionBeanRemote userSessionBean;
-             try {
-                 context = new InitialContext();
-                 userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
-             } catch (NamingException ex) {
-                 Logger.getLogger(ListUsers.class.getName()).log(Level.SEVERE, null, ex);
-             }
-
-             userSessionBean = (UserSessionBeanRemote)req.getSession().getAttribute("myStatefulBean");
-            log("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[");
-            log(Integer.toString(userSessionBean.getTest()));   
-//            req.setAttribute("name", e.getUser().getName());
-
-        }
-  
-
         
-        
+
         Throwable problem = null;
         try {
             chain.doFilter(request, response);
@@ -319,5 +305,44 @@ public class NewFilter implements Filter {
             Logger.getLogger(getClass().getName()).log(Level.SEVERE, "exception caught", ne);
             throw new RuntimeException(ne);
         }
+    }
+
+    private UserSessionBeanRemote checkLogin(HttpServletRequest req, UserSessionBeanRemote userSessionBean) throws NamingException {
+            SessionEntity e = sessionEntityFacade.findByHash(req.getSession().getId());
+            InitialContext context = new InitialContext();
+            
+            userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
+            if (e == null) {
+                Cookie[] cookies = req.getCookies();
+                Cookie persistedCookie = null;
+                if(cookies != null) {
+                     for (int i = 0; i < cookies.length; i++) {
+                    if (cookies[i].getName().equals("pLogin")) {
+                        persistedCookie = cookies[i];
+                    }
+                }
+                if (persistedCookie != null) {
+                   String[] splittedCookie = persistedCookie.getValue().split("\\$");
+                   log(persistedCookie.getValue().split("$")[0]);
+                   String userEmail = splittedCookie[1];
+                   String hash = splittedCookie[0];
+                   PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
+                   if(persistedSession != null) {
+                       
+                       userSessionBean.setUser(persistedSession.getUser());
+                       return userSessionBean;
+                   }
+                }
+                else {
+                    return null;
+                }
+                }
+               
+            }
+            else {
+                userSessionBean.setUser(e.getUser());
+                return userSessionBean;
+            }
+            return null;
     }
 }
