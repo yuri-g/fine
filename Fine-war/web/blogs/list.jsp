@@ -1,6 +1,6 @@
 <%-- 
-    Document   : users
-    Created on : Aug 18, 2013, 11:42:49 PM
+    Document   : list
+    Created on : Aug 28, 2013, 3:30:17 PM
     Author     : yuri
 --%>
 
@@ -11,17 +11,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>JSP Page</title>
+        <jsp:include page="../partial/resources.html" flush="true" />
     </head>
-    <c:if test="${not empty requestScope.uSessionBean}">
-        Logged in as: ${requestScope.uSessionBean.getUser().getName()}
+         <c:if test="${not empty sessionScope.uSessionBean}">
+        Logged in as: ${sessionScope.uSessionBean.getUser().getName()}
     </c:if>
-    ${requestScope.myStatefulBean.getTest()}
-    <body>
-        <c:forEach items="${requestScope.users}" var="item">
+    <body id="content">
+        <c:forEach items="${requestScope.entries}" var="item">
             <div>
-                ${item.getName()} <br />
-                ${item.getEmail()} <br />
-                ${item.getPassword()} <br />
+                ${item.getTitle()} <br />
+                ${item.getBody()} <br />
             </div>    
         </c:forEach>
         <a href="/logout">

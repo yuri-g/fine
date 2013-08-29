@@ -22,7 +22,7 @@ import javax.ejb.EJB;
  *
  * @author yuri
  */
-@WebServlet(name = "CreateUser", urlPatterns = {"/sign_in"})
+@WebServlet(name = "CreateUser", urlPatterns = {"/registration"})
 public class CreateUser extends HttpServlet {
     
     @EJB
@@ -55,7 +55,7 @@ public class CreateUser extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        RequestDispatcher view = getServletContext().getRequestDispatcher("/user/signin.jsp");
+        RequestDispatcher view = getServletContext().getRequestDispatcher("/session/signup.jsp");
         view.forward(request, response);
     }
 
@@ -74,10 +74,11 @@ public class CreateUser extends HttpServlet {
         String errors = validate(request);
         if (!errors.isEmpty()) {
             request.setAttribute("errors", errors);
-            RequestDispatcher view = getServletContext().getRequestDispatcher("/user/signin.jsp");
+            RequestDispatcher view = getServletContext().getRequestDispatcher("/session/signup.jsp");
             view.forward(request, response);
         }
         else {
+            request.setAttribute("errors", null);
              try {
                 UsersEntity e = new UsersEntity();
                 e.setName(request.getParameter("username"));
@@ -85,7 +86,7 @@ public class CreateUser extends HttpServlet {
                 String ePassword = encodePassword(request.getParameter("password"));
                 e.setPassword(ePassword);
                 usersEntityFacade.create(e);
-                response.sendRedirect("ListUsers");
+                response.sendRedirect("/log_in");
 
             }      
             catch (Exception ex) {

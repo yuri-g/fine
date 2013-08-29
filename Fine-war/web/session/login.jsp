@@ -2,8 +2,7 @@
 <html>
     <head>
         <title>Login Page</title>
-        <link href="../style.css" rel="stylesheet"  />
-        <link href="../bootstrap.css" rel="stylesheet"  />
+        <jsp:include page="../partial/resources.html" flush="true" />
     </head>
 
 
@@ -16,7 +15,7 @@
             </div>
         </c:if>
          <div class="row">
-            <div class="col-lg-2">
+            <div class="col-lg-2 col-lg-offset-5 box">
                 <form action="/log_in" method="post">
                     <fieldset> 
                         <div class="form-group">

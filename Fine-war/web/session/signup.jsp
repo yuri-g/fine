@@ -5,26 +5,26 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Sign In</title>
-        <link href="../style.css" rel="stylesheet"  />
-        <link href="../bootstrap.css" rel="stylesheet"  />
+        <title>Sign Up</title>
+        <jsp:include page="../partial/resources.html" flush="true" />
     </head>
     <body id="content">
-        <c:if test="${not empty requestScope.errors}">
-            <div class="row">
-                <div class="col-lg-2">
+        <c:if test="${!empty requestScope.errors}">
+            <div class='row'><div class='col-lg-2 col-lg-offset-5 alert alert-danger'>
                     ${requestScope.errors}    
                 </div>
             </div>
+            
         </c:if>
 
         <div class="row">
-            <div class="col-lg-2">
-                <form action="/sign_in" method="post">
+            <div class="col-lg-2 col-lg-offset-5 box">
+                <form action="/registration" method="post">
                     <fieldset> 
                         <div class="form-group">
                             <label for="username">Name:</label>

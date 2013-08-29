@@ -41,5 +41,17 @@ public class UsersEntityFacade extends AbstractFacade<UsersEntity> {
        
     }
     
+    public UsersEntity findById(int id) {
+        try {
+            return (UsersEntity)em.createQuery(
+              "SELECT c FROM UsersEntity c WHERE c.id = :id")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        }
+        catch(NoResultException e) {
+            return null;
+        }
+    }
+    
     
 }

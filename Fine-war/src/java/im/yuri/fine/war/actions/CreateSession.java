@@ -77,11 +77,14 @@ public class CreateSession extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (request.getAttribute("uSessionBean") != null) {
+        if (request.getSession(false).getAttribute("uSessionBean") != null) {
             response.sendRedirect("/");
         }
-        RequestDispatcher view = getServletContext().getRequestDispatcher("/user/login.jsp");
-        view.forward(request, response);
+        else {
+            RequestDispatcher view = getServletContext().getRequestDispatcher("/session/login.jsp");
+            view.forward(request, response);
+        }
+
     }
 
     /**
@@ -102,7 +105,7 @@ public class CreateSession extends HttpServlet {
         try {
             if(user != null) {
                 if (!Password.check(ePassword, user.getPassword())) {
-                    RequestDispatcher view = getServletContext().getRequestDispatcher("/user/login.jsp");
+                    RequestDispatcher view = getServletContext().getRequestDispatcher("/session/login.jsp");
                     request.setAttribute("errors", "Something went wrong!");
                     view.forward(request, response);
                 }
@@ -110,11 +113,10 @@ public class CreateSession extends HttpServlet {
                     SessionEntity e = sessionEntityFacade.findByUserEmail(email);
                     InitialContext context = new InitialContext();
                     UserSessionBeanRemote userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
-                    Random randomGenerator = new Random();
-                    int randomInt = randomGenerator.nextInt(100);
-                    HttpSession clientSession = request.getSession(false);
-                    clientSession.setAttribute("myStatefulBean", userSessionBean);
-                    log("XXXXXXXXXX2222222222222222222222222222222222222222");
+                    userSessionBean.setUser(user);
+                    HttpSession clientSession = request.getSession(true);
+                    clientSession.setAttribute("uSessionBean", userSessionBean);
+                    log(((UserSessionBeanRemote)  clientSession.getAttribute("uSessionBean")).getUser().getName());
                     if(request.getParameter("remember") != null) {
                         String persistedSession = Base64.encodeBase64String(SecureRandom.getInstance("SHA1PRNG").generateSeed(128));
                         PersistedSessionEntity pSession = new PersistedSessionEntity();
@@ -122,6 +124,7 @@ public class CreateSession extends HttpServlet {
                         pSession.setUser(user);
                         persistedSession = persistedSession + "$" + user.getEmail();
                         Cookie c = new Cookie("pLogin", persistedSession);
+                        c.setMaxAge(60*60*24*31);
                         response.addCookie(c);
                         persistedSessionEntityFacade.create(pSession);
 
@@ -140,7 +143,6 @@ public class CreateSession extends HttpServlet {
                 }    
            }
             else {
-                log("whtya");
                 response.sendRedirect("/log_in");
             }
 

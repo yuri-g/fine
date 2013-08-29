@@ -5,10 +5,14 @@
 package im.yuri.fine.war.actions;
 
 import im.yuri.fine.ejb.UserSessionBeanRemote;
-import im.yuri.fine.ejb.entities.facades.UsersEntityFacade;
+import im.yuri.fine.ejb.entities.BlogEntryEntity;
+import im.yuri.fine.ejb.entities.facades.BlogEntryEntityFacade;
 import java.io.IOException;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,14 +24,13 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author yuri
  */
-@WebServlet(name = "ListUsers", urlPatterns = {"/ListUsers"})
-public class ListUsers extends HttpServlet {
-
-    private List users;
+@WebServlet(name = "CreateBlogEntry", urlPatterns = {"/new_entry"})
+public class CreateBlogEntry extends HttpServlet {
+    
     
     @EJB
-    private UsersEntityFacade usersEntityFacade;
-    
+    private BlogEntryEntityFacade blogEntryEntityFacade;
+
     /**
      * Processes requests for both HTTP
      * <code>GET</code> and
@@ -40,14 +43,10 @@ public class ListUsers extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        users = usersEntityFacade.findAll();
-        request.setAttribute("users", users);
-        UserSessionBeanRemote userSessionBean = (UserSessionBeanRemote)request.getSession().getAttribute("uSessionBean");
-        RequestDispatcher view = getServletContext().getRequestDispatcher("/session/users.jsp");
-        view.forward(request, response);
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    }
+
+ 
     /**
      * Handles the HTTP
      * <code>GET</code> method.
@@ -60,7 +59,9 @@ public class ListUsers extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        RequestDispatcher view = request.getRequestDispatcher("/blogs/newEntry.jsp");
+        view.forward(request, response);
+       
     }
 
     /**
@@ -75,7 +76,25 @@ public class ListUsers extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        String body = request.getParameter("body");
+        String title = request.getParameter("title");
+        InitialContext context;
+        UserSessionBeanRemote userSessionBean;
+        try {
+            context = new InitialContext();
+            userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
+        } catch (NamingException ex) {
+            Logger.getLogger(CreateBlogEntry.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        userSessionBean = (UserSessionBeanRemote)request.getSession().getAttribute("uSessionBean");
+        BlogEntryEntity e = new BlogEntryEntity();
+        e.setBody(body);
+        e.setTitle(title);
+        e.setUserId(userSessionBean.getUser());
+        blogEntryEntityFacade.create(e);
+        response.sendRedirect("/home");
+//        RequestDispatcher view = request.getRequestDispatcher("")
+//        processRequest(request, response);
     }
 
     /**
@@ -86,5 +105,5 @@ public class ListUsers extends HttpServlet {
     @Override
     public String getServletInfo() {
         return "Short description";
-    }// </editor-fold>
+    }
 }

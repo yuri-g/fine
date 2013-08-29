@@ -4,12 +4,15 @@
  */
 package im.yuri.fine.war.actions;
 
+import im.yuri.fine.ejb.UserSessionBeanRemote;
 import im.yuri.fine.ejb.entities.PersistedSessionEntity;
 import im.yuri.fine.ejb.entities.SessionEntity;
 import im.yuri.fine.ejb.entities.facades.PersistedSessionEntityFacade;
 import im.yuri.fine.ejb.entities.facades.SessionEntityFacade;
 import java.io.IOException;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.Cookie;
@@ -57,7 +60,11 @@ public class DestroySession extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        if (request.getAttribute("uSessionBean") != null) {
+        UserSessionBeanRemote userSessionBean;
+        
+        userSessionBean = (UserSessionBeanRemote) request.getSession(false).getAttribute("uSessionBean");
+        if (userSessionBean != null) {
+           
             SessionEntity e = sessionEntityFacade.findByHash(request.getSession().getId());
             if (e != null) {
                 sessionEntityFacade.remove(e);
@@ -66,26 +73,38 @@ public class DestroySession extends HttpServlet {
             Cookie persistedCookie = null;
             if(cookies != null) {
                  for (int i = 0; i < cookies.length; i++) {
-                if (cookies[i].getName().equals("pLogin")) {
-                    persistedCookie = cookies[i];
+                    if (cookies[i].getName().equals("pLogin")) {
+                        persistedCookie = cookies[i];
+                    }
                 }
-            }
-            if(persistedCookie != null) {
-                String[] splittedCookie = persistedCookie.getValue().split("\\$");
-                String userEmail = splittedCookie[1];
-                String hash = splittedCookie[0];
-                PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
-                if (persistedSession != null) {
-                    persistedSessionEntityFacade.remove(persistedSession);
+                if(persistedCookie != null) {
+                    String[] splittedCookie = persistedCookie.getValue().split("\\$");
+                    String userEmail = splittedCookie[1];
+                    String hash = splittedCookie[0];
+                    PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
+                    if (persistedSession != null) {
+                        persistedSessionEntityFacade.remove(persistedSession);
+                    }
+                    persistedCookie.setMaxAge(0);
+                    response.addCookie(persistedCookie);
+
                 }
-                log("TEEEEEEEEEEEEEST");
-                persistedCookie.setMaxAge(0);
-                response.addCookie(persistedCookie);
-                
-            }
                
             }
-            response.sendRedirect("/ListUsers");
+        InitialContext context;
+        
+        try {
+            context = new InitialContext();
+            userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
+        } catch (NamingException ex) {
+            
+        }
+        userSessionBean = (UserSessionBeanRemote)request.getSession(false).getAttribute("uSessionBean");
+        log(userSessionBean.getClass().toString());
+        request.getSession(false).setAttribute("uSessionBean", null);
+        userSessionBean.remove();
+//        log(userSessionBean.getUser().getName().toString());
+        response.sendRedirect("/ListUsers");
             
         }
         else {

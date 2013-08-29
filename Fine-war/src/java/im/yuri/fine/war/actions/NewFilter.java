@@ -30,6 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -151,7 +152,6 @@ public class NewFilter implements Filter {
         userSessionBean = (UserSessionBeanRemote)req.getSession().getAttribute("uSessionBean");
         if (userSessionBean == null) {
            try {
-                 
                userSessionBean = checkLogin(req,  userSessionBean);
            }
            catch (NamingException ex) {
@@ -159,7 +159,8 @@ public class NewFilter implements Filter {
            }
             
             if (userSessionBean != null) {
-                req.setAttribute("uSessionBean", userSessionBean);
+                HttpSession clientSession = req.getSession(false);
+                clientSession.setAttribute("uSessionBean", userSessionBean);
             }
            
         }
@@ -312,6 +313,7 @@ public class NewFilter implements Filter {
             InitialContext context = new InitialContext();
             
             userSessionBean = (UserSessionBeanRemote) context.lookup("ejb/userSessionBean");
+            
             if (e == null) {
                 Cookie[] cookies = req.getCookies();
                 Cookie persistedCookie = null;
@@ -323,13 +325,14 @@ public class NewFilter implements Filter {
                 }
                 if (persistedCookie != null) {
                    String[] splittedCookie = persistedCookie.getValue().split("\\$");
-                   log(persistedCookie.getValue().split("$")[0]);
                    String userEmail = splittedCookie[1];
                    String hash = splittedCookie[0];
                    PersistedSessionEntity persistedSession = persistedSessionEntityFacade.findByUserAndHash(userEmail, hash);
                    if(persistedSession != null) {
                        
                        userSessionBean.setUser(persistedSession.getUser());
+                       log("FUCK OFFFFFFFFFFFFf");
+                       log(persistedSession.getUser().getName().toString());
                        return userSessionBean;
                    }
                 }
@@ -340,6 +343,8 @@ public class NewFilter implements Filter {
                
             }
             else {
+                log("NNNNNNNNNNNOOOOOOOOOOOOOOOOOO");
+                log(e.getUser().getName().toString());
                 userSessionBean.setUser(e.getUser());
                 return userSessionBean;
             }
