@@ -24,7 +24,19 @@
             </div>    
             
         </c:forEach>
-       ${requestScope.pages}
+        <c:if test="${not (requestScope.pages == 0)}">
+            <c:forEach begin="1" end="${requestScope.pages}" varStatus="loop">
+                <c:choose>
+                    <c:when test="${not(loop.current == requestScope.currentPage)}">
+                        <a href="${requestScope.nextPageUrl}${loop.current}">${loop.current}</a>
+                    </c:when>
+                    <c:otherwise>
+                         <c:out value="${loop.current}"/>
+                    </c:otherwise>
+                </c:choose>
+               
+            </c:forEach>    
+        </c:if>
         <a href="/logout">
             logout
         </a>

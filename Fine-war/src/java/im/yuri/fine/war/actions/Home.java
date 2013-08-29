@@ -87,26 +87,30 @@ public class Home extends HttpServlet {
             u = usersEntityFacade.findById(userId);
             if(u != null) {
                 int currentPage;
+                String nextPageUrl ="";
                 if(request.getParameter("p") == null) {
-                    currentPage = 0;
+                    currentPage = 1;
                 }
                 else {
                     currentPage = Integer.parseInt(request.getParameter("p"));
                 }
+                nextPageUrl = request.getRequestURL().toString() + "?id=" + u.getId() +"&p=";
+                request.setAttribute("currentPage", currentPage);
                 entries = blogEntryEntityFacade.findAllByEmailDateDesc(u.getEmail());
                 int pages = (int)Math.ceil(entries.size()/5.0);
                 int lastIndex;
-                if(entries.size() < ((currentPage*5)+5)) {
+                if(entries.size() < (((currentPage-1)*5)+5)) {
                     lastIndex = entries.size();
                 }
                 else {
-                    lastIndex = ((currentPage*5)+5);
+                    lastIndex = (((currentPage-1)*5)+5);
                 }
                 log(Integer.toString(entries.size()));
                 log(Integer.toString(lastIndex));
-                List<BlogEntryEntity> perPage = entries.subList(currentPage*5, lastIndex);
+                List<BlogEntryEntity> perPage = entries.subList((currentPage-1)*5, lastIndex);
                 request.setAttribute("pages", pages);
                 request.setAttribute("entries", perPage);
+                request.setAttribute("nextPageUrl", nextPageUrl);
                 view = request.getRequestDispatcher("/blogs/list.jsp");
                 view.forward(request, response);
             }
