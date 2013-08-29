@@ -5,12 +5,16 @@
 package im.yuri.fine.ejb.entities;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -28,6 +32,25 @@ public class BlogEntryEntity implements Serializable {
     @JoinColumn(name = "userId")
     @OneToOne
     private UsersEntity userId;
+    
+    
+    private String body;
+    
+    private String title;
+    
+    private int rating; 
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
 
     public UsersEntity getUserId() {
         return userId;
@@ -61,11 +84,6 @@ public class BlogEntryEntity implements Serializable {
         this.rating = rating;
     }
     
-    private String body;
-    
-    private String title;
-    
-    private int rating; 
 
     public Long getId() {
         return id;

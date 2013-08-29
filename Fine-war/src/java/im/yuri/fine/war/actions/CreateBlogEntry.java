@@ -8,6 +8,7 @@ import im.yuri.fine.ejb.UserSessionBeanRemote;
 import im.yuri.fine.ejb.entities.BlogEntryEntity;
 import im.yuri.fine.ejb.entities.facades.BlogEntryEntityFacade;
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
@@ -91,6 +92,7 @@ public class CreateBlogEntry extends HttpServlet {
         e.setBody(body);
         e.setTitle(title);
         e.setUserId(userSessionBean.getUser());
+        e.setCreatedAt(new Date());
         blogEntryEntityFacade.create(e);
         response.sendRedirect("/home");
 //        RequestDispatcher view = request.getRequestDispatcher("")

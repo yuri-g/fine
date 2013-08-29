@@ -18,11 +18,13 @@
     </c:if>
     <body id="content">
         <c:forEach items="${requestScope.entries}" var="item">
-            <div>
+            <div class="box">
                 ${item.getTitle()} <br />
                 ${item.getBody()} <br />
             </div>    
+            
         </c:forEach>
+       ${requestScope.pages}
         <a href="/logout">
             logout
         </a>

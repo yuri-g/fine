@@ -68,7 +68,7 @@ public class Home extends HttpServlet {
             }
             userSessionBean = (UserSessionBeanRemote)request.getSession(false).getAttribute("uSessionBean");
             if (userSessionBean != null) {
-                entries = blogEntryEntityFacade.findAllByEmail(userSessionBean.getUser().getEmail());
+                entries = blogEntryEntityFacade.findAllByEmailDateDesc(userSessionBean.getUser().getEmail());
                 request.setAttribute("entries", entries);
                 view = request.getRequestDispatcher("/blogs/list.jsp");
                 view.forward(request, response);
@@ -86,8 +86,27 @@ public class Home extends HttpServlet {
             UsersEntity u;
             u = usersEntityFacade.findById(userId);
             if(u != null) {
-                entries = blogEntryEntityFacade.findAllByEmail(u.getEmail());
-                request.setAttribute("entries", entries);
+                int currentPage;
+                if(request.getParameter("p") == null) {
+                    currentPage = 0;
+                }
+                else {
+                    currentPage = Integer.parseInt(request.getParameter("p"));
+                }
+                entries = blogEntryEntityFacade.findAllByEmailDateDesc(u.getEmail());
+                int pages = (int)Math.ceil(entries.size()/5.0);
+                int lastIndex;
+                if(entries.size() < ((currentPage*5)+5)) {
+                    lastIndex = entries.size();
+                }
+                else {
+                    lastIndex = ((currentPage*5)+5);
+                }
+                log(Integer.toString(entries.size()));
+                log(Integer.toString(lastIndex));
+                List<BlogEntryEntity> perPage = entries.subList(currentPage*5, lastIndex);
+                request.setAttribute("pages", pages);
+                request.setAttribute("entries", perPage);
                 view = request.getRequestDispatcher("/blogs/list.jsp");
                 view.forward(request, response);
             }

@@ -29,10 +29,10 @@ public class BlogEntryEntityFacade extends AbstractFacade<BlogEntryEntity> {
         super(BlogEntryEntity.class);
     }
     
-    public List<BlogEntryEntity> findAllByEmail(String email) {
+    public List<BlogEntryEntity> findAllByEmailDateDesc(String email) {
         try {
             return (List<BlogEntryEntity>)em.createQuery(
-                    "SELECT c FROM BlogEntryEntity c WHERE c.userId.email = :userEmail")
+                    "SELECT c FROM BlogEntryEntity c WHERE c.userId.email = :userEmail ORDER BY c.createdAt DESC ")
                     .setParameter("userEmail", email).getResultList();
         }
         catch(NoResultException e) {
