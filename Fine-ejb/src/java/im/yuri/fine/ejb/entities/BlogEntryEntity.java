@@ -5,14 +5,16 @@
 package im.yuri.fine.ejb.entities;
 
 import java.io.Serializable;
-import java.sql.Time;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,11 +31,29 @@ public class BlogEntryEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     
+    
+    /*
     @JoinColumn(name = "userId")
     @OneToOne
     private UsersEntity userId;
+    */
     
+    @ManyToOne
+    @JoinColumn(name="USER_ID")
+    private UsersEntity user;
     
+    @OneToMany(mappedBy="entry")
+    private List<VoteEntity> votes;
+
+    public UsersEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UsersEntity user) {
+        this.user = user;
+    }
+    
+    @Column(columnDefinition="LONG VARCHAR")
     private String body;
     
     private String title;
@@ -51,14 +71,14 @@ public class BlogEntryEntity implements Serializable {
         this.createdAt = createdAt;
     }
 
-
-    public UsersEntity getUserId() {
-        return userId;
-    }
-
-    public void setUserId(UsersEntity userId) {
-        this.userId = userId;
-    }
+//
+//    public UsersEntity getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(UsersEntity userId) {
+//        this.userId = userId;
+//    }
 
     public String getBody() {
         return body;

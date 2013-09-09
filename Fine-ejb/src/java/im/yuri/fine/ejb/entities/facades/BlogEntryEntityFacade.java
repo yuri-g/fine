@@ -32,13 +32,37 @@ public class BlogEntryEntityFacade extends AbstractFacade<BlogEntryEntity> {
     public List<BlogEntryEntity> findAllByEmailDateDesc(String email) {
         try {
             return (List<BlogEntryEntity>)em.createQuery(
-                    "SELECT c FROM BlogEntryEntity c WHERE c.userId.email = :userEmail ORDER BY c.createdAt DESC ")
+                    "SELECT c FROM BlogEntryEntity c WHERE c.user.email = :userEmail ORDER BY c.createdAt DESC ")
                     .setParameter("userEmail", email).getResultList();
         }
         catch(NoResultException e) {
             return null;
         }
     } 
+    
+    public BlogEntryEntity findById(int id) {
+        try {
+            return (BlogEntryEntity)em.createQuery(
+                    "SELECT c FROM BlogEntryEntity c WHERE c.id = id")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        }
+        catch(NoResultException e) {
+            return null;
+        }
+    }
+    
+    public List<BlogEntryEntity> findPopular() {
+        try {
+            return (List<BlogEntryEntity>)em.createQuery(
+                    "SELECT c FROM BlogEntryEntity c ORDER BY c.rating DESC")
+                    .setMaxResults(10)
+                    .getResultList();  
+        }
+        catch(NoResultException e) {
+            return null;
+        }
+    }
     
     
 }

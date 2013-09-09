@@ -5,10 +5,12 @@
 package im.yuri.fine.ejb.entities;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
@@ -19,6 +21,25 @@ public class UsersEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @OneToMany(mappedBy="user")
+    private List<BlogEntryEntity> blogEntries;
+    
+    
+    @OneToMany(mappedBy="user")
+    private List<VoteEntity> votes;
+    
+    public void addBlogEntry(BlogEntryEntity entry) {
+        this.blogEntries.add(entry);
+    }
+
+    public List<BlogEntryEntity> getBlogEntries() {
+        return blogEntries;
+    }
+
+    public void setBlogEntries(List<BlogEntryEntity> blogEntries) {
+        this.blogEntries = blogEntries;
+    }
 
     public String getName() {
         return name;

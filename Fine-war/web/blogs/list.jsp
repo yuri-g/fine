@@ -14,14 +14,26 @@
         <jsp:include page="../partial/resources.html" flush="true" />
     </head>
          <c:if test="${not empty sessionScope.uSessionBean}">
-        Logged in as: ${sessionScope.uSessionBean.getUser().getName()}
-    </c:if>
+            Logged in as: ${sessionScope.uSessionBean.getUser().getName()}
+        </c:if>
     <body id="content">
-        <c:forEach items="${requestScope.entries}" var="item">
+        <c:forEach items="${requestScope.entries}" var="item" varStatus="status">
             <div class="box">
+                <c:if test="${not empty requestScope.voted}">
+                    <c:if test="${requestScope.voted[status.index] == false}">
+                         <c:if test="${sessionScope.uSessionBean.getUser().getId() != requestScope.userId}">
+                             <a href="/upvote" id="${item.getId()}" class="upvote">▲</a>
+                        </c:if>
+                    </c:if>
+                    
+                </c:if>
                 ${item.getTitle()} <br />
                 ${item.getBody()} <br />
+                ${item.getRating()} <br/>   
             </div>    
+            <div>
+                
+            </div>
             
         </c:forEach>
         <c:if test="${not (requestScope.pages == 0)}">

@@ -1,3 +1,7 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+}
+
 #content {
     margin: 20px;
 }
@@ -26,6 +30,40 @@
     box-shadow: none;
 }
 
+#logo {
+    padding-left: 20px;
+    
+}
+#fine-part {
+    
+    color: #191919;
+    font-size: 48px;
+}
 
+.blog-entry {
+   
+}
 
+.blog-entry .title {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 36px;
+    min-height: 52px !important;
+    padding: 10px 0;
+}
+
+.user-panel {
+    padding-top: 15px;
+    padding-left: 30px;
+    font-size: 22px;
+    text-align:right;
+}
+
+.upvote:hover {
+    text-decoration: none;
+}
   
+.votes {
+    margin-top: 20px;
+    color: rgb(66, 139, 202);
+    font-size: 20px;
+}

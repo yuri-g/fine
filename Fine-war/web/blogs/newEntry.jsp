@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Create new blog entry</title>
+        <title>Fine - new post</title>
         <jsp:include page="../partial/resources.html" flush="true" />
     </head>
     <body id="content">
@@ -27,11 +27,7 @@
                 <input type="submit">
                 
             </form>
-
-
         </div>
-
-        
     </body>
     
     <script>
