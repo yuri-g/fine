@@ -139,7 +139,7 @@ public class CreateSession extends HttpServlet {
                         sessionEntityFacade.create(e);
                     }
 
-                    response.sendRedirect("/ListUsers");
+                    response.sendRedirect("/");
                 }    
            }
             else {

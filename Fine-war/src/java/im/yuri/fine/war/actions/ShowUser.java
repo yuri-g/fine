@@ -130,6 +130,7 @@ public class ShowUser extends HttpServlet {
                 nextPageUrl = request.getRequestURL().toString() + "?id=" + u.getId() +"&p=";
                 request.setAttribute("currentPage", currentPage);
                 request.setAttribute("userId", userId);
+                request.setAttribute("userName", u.getName());
                 entries = blogEntryEntityFacade.findAllByEmailDateDesc(u.getEmail());
                 int pages = (int)Math.ceil(entries.size()/5.0);
                 int lastIndex;

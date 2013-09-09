@@ -10,33 +10,39 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Fine - ${requestScope.userName}</title>
         <jsp:include page="../partial/resources.html" flush="true" />
     </head>
-         <c:if test="${not empty sessionScope.uSessionBean}">
-            Logged in as: ${sessionScope.uSessionBean.getUser().getName()}
-        </c:if>
     <body id="content">
-        <c:forEach items="${requestScope.entries}" var="item" varStatus="status">
-            <div class="box">
-                <c:if test="${not empty requestScope.voted}">
-                    <c:if test="${requestScope.voted[status.index] == false}">
-                         <c:if test="${sessionScope.uSessionBean.getUser().getId() != requestScope.userId}">
-                             <a href="/upvote" id="${item.getId()}" class="upvote">▲</a>
-                        </c:if>
-                    </c:if>
-                    
-                </c:if>
-                ${item.getTitle()} <br />
-                ${item.getBody()} <br />
-                ${item.getRating()} <br/>   
-            </div>    
-            <div>
-                
-            </div>
-            
-        </c:forEach>
-        <c:if test="${not (requestScope.pages == 0)}">
+        <jsp:include page="../partial/logo.html" flush="true" />
+        <div class="row">
+            <div class="blog-entry col-lg-6 col-lg-offset-2">
+                <c:forEach items="${requestScope.entries}" var="item" varStatus = "status">
+                    <div class="row" id="${item.getId()}">
+                        <div class="title">
+                            ${item.getTitle()}
+                        </div>
+                        <div class="blog-body">
+                            ${item.getBody()}
+                        </div>
+                        <div class="votes">
+                            <c:choose>
+                                    <c:when test="${requestScope.voted[status.index] == false}">
+                                        <a href="#" id="${item.getId()}" class="upvote active-link">
+                                            <span class="glyphicon glyphicon-heart-empty"></span>
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="glyphicon glyphicon-heart"></span>
+                                    </c:otherwise>
+                            </c:choose> 
+                            <span class="number">
+                                ${item.getRating()}
+                            </span>
+                        </div>
+                    </div>
+                </c:forEach>
+            <c:if test="${not (requestScope.pages == 0)}">
             <c:forEach begin="1" end="${requestScope.pages}" varStatus="loop">
                 <c:choose>
                     <c:when test="${not(loop.current == requestScope.currentPage)}">
@@ -46,11 +52,44 @@
                          <c:out value="${loop.current}"/>
                     </c:otherwise>
                 </c:choose>
-               
             </c:forEach>    
-        </c:if>
-        <a href="/logout">
-            logout
-        </a>
+            </c:if>
+          </div>
+                      <div class="col-lg-4 user-panel">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.uSessionBean}">
+                        ${sessionScope.uSessionBean.getUser().getName()}
+                        <div>
+                            <a href="/blog">
+                                Blog
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/new_entry">
+                                New post
+                            </a>
+
+                        </div>
+                        <div>
+                            <a href="/settings">
+                                Settings
+                            </a>
+                        </div>
+                    </c:when> 
+                    <c:otherwise>
+                        <div>
+                            <a href="/registration">
+                                Sign up
+                            </a>
+                        </div>  
+                        <div>
+                            <a href="/log_in">
+                                Sign in
+                            </a>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
     </body>
 </html>

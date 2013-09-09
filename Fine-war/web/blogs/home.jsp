@@ -14,19 +14,11 @@
         <title>Fine</title>
     </head>
     <body id="content">
-        <div id="logo">
-            <span id="fine-part">
-                Fine
-            </span>
-            <span id="blogs-part">
-                blogs
-            </span>
-        </div>
+        <jsp:include page="../partial/logo.html" flush="true" />
         <div class="row">
             <div class="blog-entry col-lg-6 col-lg-offset-2">
                 <c:forEach items="${requestScope.popular}" var="item" varStatus = "status">
                     <div class="row">
-
                         <div class="title">
                              ${item.getTitle()}
                         </div>
@@ -52,38 +44,49 @@
                                 <span class="number">
                                     ${item.getRating()}
                                 </span>
-
                             </div>
-
-
-
-
                     </div>
-
                 </c:forEach>
             </div>
             <div class="col-lg-4 user-panel">
-                <c:if test="${not empty sessionScope.uSessionBean}">
-                    ${sessionScope.uSessionBean.getUser().getName()}
-                    <div>
-                        <a href="/blog">
-                            Blog
-                        </a>
-                    </div>
-                    <div>
-                        <a href="/new_entry">
-                            New post
-                        </a>
-                        
-                    </div>
-                    <div>
-                        <a href="/settings">
-                            Settings
-                        </a>
-                    </div>
-                        
+                <c:choose>
+                    <c:when test="${not empty sessionScope.uSessionBean}">
+                        ${sessionScope.uSessionBean.getUser().getName()}
+                        <div>
+                            <a href="/blog">
+                                Blog
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/new_entry">
+                                New post
+                            </a>
 
-                </c:if>
+                        </div>
+                        <div>
+                            <a href="/settings">
+                                Settings
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/logout">
+                                Logout
+                            </a>
+                        </div>
+                    </c:when> 
+                    <c:otherwise>
+                        <div>
+                            <a href="/registration">
+                                Sign up
+                            </a>
+                        </div>  
+                        <div>
+                            <a href="/log_in">
+                                Sign in
+                            </a>
+                        </div>
+                    </c:otherwise>
+                </c:choose>
             </div>
         </div>
         

@@ -13,21 +13,18 @@
         <jsp:include page="../partial/resources.html" flush="true" />
     </head>
     <body id="content">
+        <jsp:include page="../partial/logo.html" flush="true" /> 
         <div class="row">
-            <div class="col-lg-offset-2">
+            <div class="col-lg-6 col-lg-offset-2">
                 <form action="/edit" method="post" id="edit_entry">
                     <div class="row">
-                        <div class="col-lg-4">
-                            <div id="title">
-                                ${requestScope.title}
-                            </div>
+                        <div id="title">
+                            ${requestScope.title}
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-4">
-                            <div id="body">
-                                ${requestScope.body}
-                            </div>
+                        <div id="body">
+                            ${requestScope.body}
                         </div>
                     </div>
                     <input id="hTitle" type="hidden" name="title">
@@ -37,6 +34,33 @@
 
                 </form>
             </div>
+            <div class="col-lg-4 user-panel">
+                <c:choose>
+                    <c:when test="${not empty sessionScope.uSessionBean}">
+                        ${sessionScope.uSessionBean.getUser().getName()}
+                        <div>
+                            <a href="/blog">
+                                Blog
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/new_entry">
+                                New post
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/settings">
+                                Settings
+                            </a>
+                        </div>
+                        <div>
+                            <a href="/logout">
+                                Logout
+                            </a>
+                        </div>
+                    </c:when> 
+                </c:choose>
+            </div> 
         </div>
     </body>
     

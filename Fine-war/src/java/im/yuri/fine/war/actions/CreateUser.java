@@ -127,6 +127,9 @@ public class CreateUser extends HttpServlet {
         if (!password.equals(request.getParameter("passwordC"))) {
             errors += "Passwords don't match. </ br>";
         }
+        if(usersEntityFacade.findByEmail(request.getParameter("email")) != null) {
+            errors += "This email is already in use. </ br>";
+        }
         return errors;
 
     }

@@ -9,7 +9,7 @@
     <body id="content">
         <c:if test="${not empty requestScope.errors}">
             <div class="row">
-                <div class="col-lg-2">
+                <div class='col-lg-2 col-lg-offset-5 alert alert-danger'>
                     ${requestScope.errors}    
                 </div>
             </div>

@@ -61,20 +61,24 @@ public class BlogEntryActions extends HttpServlet {
             Logger.getLogger(CreateBlogEntry.class.getName()).log(Level.SEVERE, null, ex);
         }
         userSessionBean = (UserSessionBeanRemote)request.getSession().getAttribute("uSessionBean");
-        log("WWWWOOOOWW");
-        log(splittedUrl.toString());
         if(splittedUrl[splittedUrl.length-1].equals("edit")) {
             BlogEntryEntity e = blogEntryEntityFacade.find(Long.parseLong(request.getParameter("entry")));
-            if (userSessionBean.getUser().getId().equals(e.getUser().getId())) {
-                request.setAttribute("title", e.getTitle());
-                request.setAttribute("body", e.getBody());
-                request.setAttribute("id", e.getId());
+            if(userSessionBean != null) {
+                        if (userSessionBean.getUser().getId().equals(e.getUser().getId())) {
+                            request.setAttribute("title", e.getTitle());
+                            request.setAttribute("body", e.getBody());
+                            request.setAttribute("id", e.getId());
+                        }
+                        else {
+                            response.sendRedirect("/");
+                        }
+                        RequestDispatcher view = request.getRequestDispatcher("/blogs/edit.jsp");
+                        view.forward(request, response);    
             }
             else {
                 response.sendRedirect("/");
             }
-            RequestDispatcher view = request.getRequestDispatcher("/blogs/edit.jsp");
-            view.forward(request, response);
+
         }
         else {
 

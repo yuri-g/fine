@@ -104,7 +104,7 @@ public class DestroySession extends HttpServlet {
         request.getSession(false).setAttribute("uSessionBean", null);
         userSessionBean.remove();
 //        log(userSessionBean.getUser().getName().toString());
-        response.sendRedirect("/ListUsers");
+        response.sendRedirect("/");
             
         }
         else {
